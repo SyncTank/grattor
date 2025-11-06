@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	_ "internal/config"
+	"github.com/SyncTank/grattor/internal"
 )
 
 func main() {
-	fmt.Println("hello")
+	fmt.Println(internal.Hello())
 }
