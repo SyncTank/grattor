@@ -6,5 +6,6 @@ import (
 )
 
 func main() {
-	fmt.Println(internal.Hello())
+	fmt.Println(internal.ReadConfig())
+
 }
