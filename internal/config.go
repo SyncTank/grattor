@@ -2,7 +2,7 @@ package internal
 
 import (
 	"encoding/json"
-	"fmt"
+	_ "fmt"
 	"io"
 	"log"
 	"os"
@@ -16,29 +16,36 @@ type Config struct {
 	Current_user_name string `json:"current_user_name"`
 }
 
+func Check(errorContext string, err error) {
+	if err != nil {
+		log.Fatalln(" "+errorContext+" ", err)
+		panic(err)
+	}
+}
+
+func CheckSlient(errorContext string, err error) {
+	if err != nil {
+		log.Fatalln(" "+errorContext+" ", err)
+	}
+}
+
 func ReadConfig() (Config, error) {
 	var result Config
 
 	dir, err := os.Getwd()
-	if err != nil {
-		log.Fatalln(err)
-	}
+	Check("Read - Failed to fetch working directory :", err)
 
 	file, err := os.Open(dir + CONFIG_FILE)
-	if err != nil {
-		log.Fatal(err)
-	}
+	CheckSlient(" Read - Failed to find file : ", err)
 	defer file.Close()
 
 	data, err := io.ReadAll(file)
-	if err = json.Unmarshal(data, &result); err != nil {
-		log.Fatalln(err)
+	if err := json.Unmarshal(data, &result); err != nil {
+		log.Fatalln(" Data Failed to Unmarshal : ", err)
 	}
 
 	cusr, err := user.Current()
-	if err != nil {
-		log.Fatalln(" Failed to fetch user : ", err)
-	}
+	Check(" Failed to fetch user : ", err)
 
 	if result.Current_user_name == "" {
 		SetUser(cusr.Username, result)
@@ -47,33 +54,22 @@ func ReadConfig() (Config, error) {
 	return result, nil
 }
 
-func write(cfg Config) error {
+func writeConfig(cfg Config) error {
 	dir, err := os.Getwd()
-	if err != nil {
-		log.Fatalln(err)
-	}
+	Check(" Write - Failed to fetch working directory : ", err)
 
-	file, err := os.Open(dir + CONFIG_FILE)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer file.Close()
+	filePath := dir + CONFIG_FILE
 
 	data, err := json.Marshal(cfg)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	CheckSlient(" Marshal Failure : ", err)
 
-	n, err := file.Write(data)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	fmt.Printf("Bytes writen %d", n)
+	err = os.WriteFile(filePath, data, 0644) // replaces file
+	Check(" Write out failed : ", err)
 
 	return nil
 }
 
 func SetUser(name string, cfg Config) {
 	cfg.Current_user_name = name
-	write(cfg)
+	writeConfig(cfg)
 }
