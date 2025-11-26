@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/json"
+	"errors"
 	_ "fmt"
 	"io"
 	"log"
@@ -10,6 +11,15 @@ import (
 )
 
 const CONFIG_FILE = "/.gatorconfig.json"
+
+type State struct {
+	cfg *Config
+}
+
+type Command struct {
+	name string
+	args []string
+}
 
 type Config struct {
 	DB_url            string `json:"db_url"`
@@ -27,6 +37,16 @@ func CheckSlient(errorContext string, err error) {
 	if err != nil {
 		log.Fatalln(" "+errorContext+" ", err)
 	}
+}
+
+func handlerLogin(s *State, cmd Command) error {
+	if len(cmd.args) != 1 {
+		return errors.New(" Handler expects a single argument, the username")
+	}
+
+	SetUser("Jeff", *s.cfg)
+
+	return nil
 }
 
 func ReadConfig() (Config, error) {
