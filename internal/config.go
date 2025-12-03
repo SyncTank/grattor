@@ -3,7 +3,6 @@ package internal
 import (
 	"encoding/json"
 	"errors"
-	_ "fmt"
 	"io"
 	"log"
 	"os"
@@ -13,15 +12,19 @@ import (
 const CONFIG_FILE = "/.gatorconfig.json"
 
 type State struct {
-	cfg *Config
+	cfg *config
 }
 
-type Command struct {
+type command struct { // ex. name = "login" , args = [username : String]
 	name string
 	args []string
 }
 
-type Config struct {
+type commands struct {
+	map_fun map[string]func(*State, command) error
+}
+
+type config struct {
 	DB_url            string `json:"db_url"`
 	Current_user_name string `json:"current_user_name"`
 }
@@ -33,24 +36,53 @@ func Check(errorContext string, err error) {
 	}
 }
 
-func CheckSlient(errorContext string, err error) {
+func CheckSlient(errorContext string, err error) error {
 	if err != nil {
 		log.Fatalln(" "+errorContext+" ", err)
+		return err
 	}
+	return nil
 }
 
-func handlerLogin(s *State, cmd Command) error {
-	if len(cmd.args) != 1 {
+func Init(args []string) State {
+	var state State
+
+	config, err := readConfig()
+	Check("Init - config setup", err)
+	state.cfg = config
+
+	return state
+}
+
+func handlerLogin(s *State, cmd command) error {
+	if len(cmd.args) != 1 { // expects single arg, username
+		log.Fatalln(" Run - Failed to execute command ")
 		return errors.New(" Handler expects a single argument, the username")
 	}
 
-	SetUser("Jeff", *s.cfg)
+	SetUser(cmd.args[0], s.cfg)
 
 	return nil
 }
 
-func ReadConfig() (Config, error) {
-	var result Config
+func (c *commands) run(s *State, cmd command) error {
+	err := c.map_fun[cmd.name](s, cmd)
+	if err != nil {
+		log.Fatalln(" Run - Failed to execute command ", err)
+		return err
+	}
+	return nil
+}
+
+func (c *commands) register(name string, f func(*State, command) error) {
+	if c.map_fun[name] == nil {
+		c.map_fun[name] = f
+	}
+	c.map_fun[name] = f
+}
+
+func readConfig() (*config, error) {
+	var result config
 
 	dir, err := os.Getwd()
 	Check("Read - Failed to fetch working directory :", err)
@@ -68,20 +100,20 @@ func ReadConfig() (Config, error) {
 	Check(" Failed to fetch user : ", err)
 
 	if result.Current_user_name == "" {
-		SetUser(cusr.Username, result)
+		SetUserConfig(cusr.Username, &result)
 	}
 
-	return result, nil
+	return &result, nil
 }
 
-func writeConfig(cfg Config) error {
+func writeConfig(cfg *config) error {
 	dir, err := os.Getwd()
 	Check(" Write - Failed to fetch working directory : ", err)
 
 	filePath := dir + CONFIG_FILE
 
 	data, err := json.Marshal(cfg)
-	CheckSlient(" Marshal Failure : ", err)
+	Check(" Marshal Failure : ", err)
 
 	err = os.WriteFile(filePath, data, 0644) // replaces file
 	Check(" Write out failed : ", err)
@@ -89,7 +121,14 @@ func writeConfig(cfg Config) error {
 	return nil
 }
 
-func SetUser(name string, cfg Config) {
+func SetUserConfig(name string, cfg *config) error {
 	cfg.Current_user_name = name
-	writeConfig(cfg)
+	err := writeConfig(cfg)
+	log.Println("Set local state user to ", name)
+	return CheckSlient(" SetUser - checking if name can be set : ", err)
+}
+
+func SetUser(name string, cfg *config) {
+	cfg.Current_user_name = name
+	log.Println("Set local state user to ", name)
 }

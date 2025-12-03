@@ -3,11 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/SyncTank/grattor/internal"
+	"os"
 )
 
 func main() {
-	GConfig, err := internal.ReadConfig()
-	internal.Check("main - config check", err)
-	fmt.Println(GConfig)
-
+	main := internal.Init(os.Args)
+	fmt.Println(main)
 }
