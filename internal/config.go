@@ -44,14 +44,24 @@ func CheckSlient(errorContext string, err error) error {
 	return nil
 }
 
-func Init(args []string) State {
+func Init(args []string) {
 	var state State
+	coms := commands{make(map[string]func(*State, command) error)}
+	//	var cmd command
 
 	config, err := readConfig()
 	Check("Init - config setup", err)
 	state.cfg = config
 
-	return state
+	coms.register("login", handlerLogin)
+
+	if len(args) < 2 {
+		log.Panicln(" Init - Failed to capture target")
+	}
+
+	log.Println(args)
+	//coms.run(&state, cmd)
+
 }
 
 func handlerLogin(s *State, cmd command) error {
