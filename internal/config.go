@@ -47,7 +47,7 @@ func CheckSlient(errorContext string, err error) error {
 func Init(args []string) {
 	var state State
 	coms := commands{make(map[string]func(*State, command) error)}
-	//	var cmd command
+	var cmd command
 
 	config, err := readConfig()
 	Check("Init - config setup", err)
@@ -55,12 +55,14 @@ func Init(args []string) {
 
 	coms.register("login", handlerLogin)
 
-	if len(args) < 2 {
+	if len(args) <= 2 {
 		log.Panicln(" Init - Failed to capture target")
 	}
 
-	log.Println(args)
-	//coms.run(&state, cmd)
+	cmd.name = args[1]
+	cmd.args = args[2:]
+
+	coms.run(&state, cmd)
 
 }
 
@@ -70,7 +72,7 @@ func handlerLogin(s *State, cmd command) error {
 		return errors.New(" Handler expects a single argument, the username")
 	}
 
-	SetUser(cmd.args[0], s.cfg)
+	SetUserConfig(cmd.args[0], s.cfg)
 
 	return nil
 }
@@ -117,7 +119,8 @@ func readConfig() (*config, error) {
 }
 
 func writeConfig(cfg *config) error {
-	dir, err := os.Getwd()
+	//dir, err := os.Getwd()
+	dir, err := os.UserHomeDir()
 	Check(" Write - Failed to fetch working directory : ", err)
 
 	filePath := dir + CONFIG_FILE
