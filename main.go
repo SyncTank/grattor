@@ -1,11 +1,12 @@
 package main
 
 import (
-	_ "fmt"
 	"github.com/SyncTank/grattor/internal"
+	"log"
 	"os"
 )
 
 func main() {
-	internal.Init(os.Args)
+	ctx := internal.Init(os.Args)
+	log.Println(ctx.Cfg)
 }

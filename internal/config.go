@@ -12,7 +12,8 @@ import (
 const CONFIG_FILE = "/.gatorconfig.json"
 
 type State struct {
-	cfg *config
+	Cfg  *config
+	Coms commands
 }
 
 type command struct { // ex. name = "login" , args = [username : String]
@@ -25,8 +26,10 @@ type commands struct {
 }
 
 type config struct {
-	DB_url            string `json:"db_url"`
-	Current_user_name string `json:"current_user_name"`
+	DB_url            []string `json:"db_url"`
+	Current_user_name string   `json:"current_user_name"`
+	DBString          string
+	password          string
 }
 
 func Check(errorContext string, err error) {
@@ -44,14 +47,13 @@ func CheckSlient(errorContext string, err error) error {
 	return nil
 }
 
-func Init(args []string) {
+func Init(args []string) State {
 	var state State
 	coms := commands{make(map[string]func(*State, command) error)}
-	var cmd command
 
 	config, err := readConfig()
 	Check("Init - config setup", err)
-	state.cfg = config
+	state.Cfg = config
 
 	coms.register("login", handlerLogin)
 
@@ -59,11 +61,26 @@ func Init(args []string) {
 		log.Panicln(" Init - Failed to capture target")
 	}
 
+	coms.run(&state, commandSetup(args))
+	state.Coms = coms
+
+	state.Cfg.DBString = buildDBString(&state)
+
+	return state
+}
+
+func buildDBString(s *State) string {
+	// protocol://username:password@host:port/database?sslmode=disable
+	// postgres://Rudy:@localhost:5432/gator
+	// postgres://postgres:postgres@localhost:5432/gator
+	return s.Cfg.DB_url[0] + s.Cfg.Current_user_name + ":" + s.Cfg.password + "@" + "localhost:5432/gator" + s.Cfg.DB_url[1]
+}
+
+func commandSetup(args []string) command {
+	var cmd command
 	cmd.name = args[1]
 	cmd.args = args[2:]
-
-	coms.run(&state, cmd)
-
+	return cmd
 }
 
 func handlerLogin(s *State, cmd command) error {
@@ -72,7 +89,7 @@ func handlerLogin(s *State, cmd command) error {
 		return errors.New(" Handler expects a single argument, the username")
 	}
 
-	SetUserConfig(cmd.args[0], s.cfg)
+	SetUserConfig(cmd.args[0], s.Cfg)
 
 	return nil
 }
