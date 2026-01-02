@@ -7,12 +7,15 @@ import (
 	"log"
 	"os"
 	"os/user"
+
+	"github.com/SyncTank/grattor/internal/database"
 )
 
 const CONFIG_FILE = "/.gatorconfig.json"
 
 type State struct {
 	Cfg  *config
+	db   *database.Queries
 	Coms commands
 }
 
@@ -65,6 +68,8 @@ func Init(args []string) State {
 	state.Coms = coms
 
 	state.Cfg.DBString = buildDBString(&state)
+	db, err := sql.Open("postgres", state.Cfg.DBString)
+	dbQueries := database.New(db)
 
 	return state
 }
