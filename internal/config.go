@@ -12,24 +12,19 @@ const CONFIG_FILE = "/.gatorconfig.json"
 
 type Config struct {
 	DB_url            []string `json:"db_url"`
-	Current_user_name string
-	Password          string
+	Current_user_name string   `json:"current_user_name"`
 	DBString          string
+	password          string
 }
 
-func buildDBString(s *State) string {
+func BuildDBString(s *State) string {
 	// protocol://username:password@host:port/database?sslmode=disable
 	// postgres://Rudy:@localhost:5432/gator
 	// postgres://postgres:postgres@localhost:5432/gator
-	name := s.Cfg.Current_user_name
-	password, err := "", false //s.Cfg.Password
-	if err {
-		return s.Cfg.DB_url[0] + name + ":" + "@" + "localhost:5432/gator" + s.Cfg.DB_url[1]
-	}
-	return s.Cfg.DB_url[0] + name + ":" + password + "@" + "localhost:5432/gator" + s.Cfg.DB_url[1]
+	return s.Cfg.DB_url[0] + s.Cfg.Current_user_name + ":" + s.Cfg.password + "@" + "localhost:5432/gator" + s.Cfg.DB_url[1]
 }
 
-func readConfig() (Config, error) {
+func ReadConfig() (Config, error) {
 	var result Config
 
 	dir, err := os.Getwd()

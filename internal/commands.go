@@ -2,14 +2,13 @@ package internal
 
 import (
 	"errors"
-	"github.com/SyncTank/grattor/internal/config"
 	"github.com/SyncTank/grattor/internal/database"
 )
 
 type State struct {
-	Cfg  *config.Config
-	db   *database.Queries
-	Coms commands
+	Cfg  *Config
+	DB   *database.Queries
+	Coms *commands
 }
 
 type command struct { // ex. name = "login" , args = [username : String]
@@ -21,11 +20,21 @@ type commands struct {
 	registeredCommands map[string]func(*State, command) error
 }
 
-func commandSetup(args []string) *command {
+func (s *State) State_init(args []string) error {
+	s.Coms = &commands{}
+
+	cfg, err := ReadConfig()
+	Check("Init - config setup", err)
+	s.Cfg = &cfg
+
+	return nil
+}
+
+func CommandSetup(args []string) *command {
 	return &command{Name: args[1], Args: args[2:]}
 }
 
-func (c *commands) run(s *State, cmd command) error {
+func (c *commands) Run(s *State, cmd command) error {
 	if c.registeredCommands == nil {
 		return errors.New("commands map is not initialized")
 	}
@@ -37,6 +46,6 @@ func (c *commands) run(s *State, cmd command) error {
 }
 
 // Makes a new command ( Func_Name , Callable)
-func (c *commands) register(name string, f func(*State, command) error) {
+func (c *commands) Register(name string, f func(*State, command) error) {
 	c.registeredCommands[name] = f
 }

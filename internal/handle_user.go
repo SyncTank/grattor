@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func handlerLogin(s *State, cmd command) error {
+func HandlerLogin(s *State, cmd command) error {
 	if len(cmd.Args) != 1 { // expects single arg, username
 		log.Fatalln(" Run - Failed to execute command ")
 		return errors.New(" Handler expects a single argument, the username")
