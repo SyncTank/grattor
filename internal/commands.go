@@ -2,6 +2,8 @@ package internal
 
 import (
 	"errors"
+	_ "log"
+
 	"github.com/SyncTank/grattor/internal/database"
 )
 
@@ -31,19 +33,20 @@ func (s *State) State_init(args []string) error {
 	return nil
 }
 
-func CommandSetup(args []string) *command {
-	return &command{Name: args[1], Args: args[2:]}
+func CommandSetup(args []string) command {
+	return command{Name: args[1], Args: args[2:]}
 }
 
 func (c *commands) Run(s *State, cmd command) error {
 	if c.registeredCommands == nil {
 		return errors.New("commands map is not initialized")
 	}
-	fun, err := c.registeredCommands[cmd.Name]
-	if err {
+	fun, ok := c.registeredCommands[cmd.Name]
+	if !ok {
 		return errors.New(" Run - Failed to execute command ")
 	}
 	return fun(s, cmd)
+
 }
 
 // Makes a new command ( Func_Name , Callable)

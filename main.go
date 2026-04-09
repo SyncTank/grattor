@@ -20,8 +20,6 @@ func main() {
 
 	state.Coms.Register("login", internal.HandlerLogin)
 	state.Coms.Register("register", internal.HandlerRegister)
-	cmd := internal.CommandSetup(args)
-	state.Coms.Run(&state, *cmd)
 
 	state.Cfg.DBString = internal.BuildDBString(&state)
 	db, err := sql.Open("postgres", state.Cfg.DBString)
@@ -30,4 +28,8 @@ func main() {
 	dbQueries := database.New(db)
 	state.DB = dbQueries
 
+	err = state.Coms.Run(&state, internal.CommandSetup(args))
+	if err != nil {
+		log.Fatal(err)
+	}
 }
