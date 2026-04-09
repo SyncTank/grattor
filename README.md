@@ -6,6 +6,9 @@ psql for Postgres
 systemctl status postgresql
 sudo systemctl start postgresql
 
+Connection String : file called .gatorjson
+{"db_url": ["postgres://", "?sslmode=disable"],"current_user_name":"postgres", "DBString":"", "password": ""}
+
 Goose for database migrations, setups are in SQL folder 
 goose postgres <connection_string> up
 # example:
