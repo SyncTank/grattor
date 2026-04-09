@@ -3,8 +3,8 @@ go - Blog Aggregator
 
 Initial Project was setup using these tools 
 psql for Postgres
-sudo systemctl status psql
-sudo systemctl start psql
+systemctl status postgresql
+sudo systemctl start postgresql
 
 Goose for database migrations, setups are in SQL folder 
 goose postgres <connection_string> up

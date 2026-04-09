@@ -1,1 +1,1 @@
-{"db_url": ["postgres://", "?sslmode=disable"],"current_user_name":"postgres", "DBString":""}
+{"db_url": ["postgres://", "?sslmode=disable"],"current_user_name":"postgres", "DBString":"", "password": "postgres"}

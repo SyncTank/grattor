@@ -19,6 +19,7 @@ func main() {
 	state.State_init(os.Args)
 
 	state.Coms.Register("login", internal.HandlerLogin)
+	state.Coms.Register("register", internal.HandlerRegister)
 	cmd := internal.CommandSetup(args)
 	state.Coms.Run(&state, *cmd)
 

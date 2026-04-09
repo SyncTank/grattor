@@ -13,8 +13,8 @@ const CONFIG_FILE = "/.gatorconfig.json"
 type Config struct {
 	DB_url            []string `json:"db_url"`
 	Current_user_name string   `json:"current_user_name"`
+	Password          string   `json:"password"`
 	DBString          string
-	password          string
 }
 
 func BuildDBString(s *State) string {
@@ -22,7 +22,7 @@ func BuildDBString(s *State) string {
 	// postgres://Rudy:@localhost:5432/gator
 	// postgres://postgres:postgres@localhost:5432/gator
 	user := s.Cfg.Current_user_name
-	pass := s.Cfg.password
+	pass := s.Cfg.Password
 	return s.Cfg.DB_url[0] + user + ":" + pass + "@" + "localhost:5432/gator" + s.Cfg.DB_url[1]
 }
 
