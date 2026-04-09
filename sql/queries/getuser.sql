@@ -1,6 +1,3 @@
 -- name: GetUser :one
-SELECT users (id)
-VALUES (
-    $1,
-)
-RETURNING *;
+SELECT * FROM users
+WHERE id = $1 LIMIT 1;
