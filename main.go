@@ -19,16 +19,13 @@ func main() {
 	state.State_init(os.Args)
 
 	state.Coms.Register("login", internal.HandlerLogin)
-
 	cmd := internal.CommandSetup(args)
-	log.Println(cmd)
 	state.Coms.Run(&state, *cmd)
-
-	return
 
 	state.Cfg.DBString = internal.BuildDBString(&state)
 	db, err := sql.Open("postgres", state.Cfg.DBString)
 	internal.Check("database connection : ", err)
+
 	dbQueries := database.New(db)
 	state.DB = dbQueries
 

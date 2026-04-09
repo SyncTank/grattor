@@ -21,7 +21,9 @@ func BuildDBString(s *State) string {
 	// protocol://username:password@host:port/database?sslmode=disable
 	// postgres://Rudy:@localhost:5432/gator
 	// postgres://postgres:postgres@localhost:5432/gator
-	return s.Cfg.DB_url[0] + s.Cfg.Current_user_name + ":" + s.Cfg.password + "@" + "localhost:5432/gator" + s.Cfg.DB_url[1]
+	user := s.Cfg.Current_user_name
+	pass := s.Cfg.password
+	return s.Cfg.DB_url[0] + user + ":" + pass + "@" + "localhost:5432/gator" + s.Cfg.DB_url[1]
 }
 
 func ReadConfig() (Config, error) {

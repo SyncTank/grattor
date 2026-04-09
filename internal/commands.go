@@ -22,6 +22,7 @@ type commands struct {
 
 func (s *State) State_init(args []string) error {
 	s.Coms = &commands{}
+	s.Coms.registeredCommands = make(map[string]func(*State, command) error)
 
 	cfg, err := ReadConfig()
 	Check("Init - config setup", err)
