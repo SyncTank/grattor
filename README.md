@@ -6,6 +6,10 @@ psql for Postgres
 systemctl status postgresql
 sudo systemctl start postgresql
 
+For reindexing :
+ALTER DATABASE postgres REFRESH COLLATION VERSION;
+REINDEX DATABASE postgres;
+
 Connection String : file called .gatorjson
 {"db_url": ["postgres://", "?sslmode=disable"],"current_user_name":"postgres", "DBString":"", "password": ""}
 
