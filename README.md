@@ -30,10 +30,10 @@ go build
 For a continer build you can use this for the db
 
 podman run -d \
-    --name postgres-test \
-    -network [yournetwork] \
-    -e POSTGRES_PASSWORD=[yourpassword] \
-    -p 5432:5432 \
-    -v [yourvolume]:/var/lib/postgresql \
-    postgres
+  --name postgres-test \
+  --network [network] \
+  -e POSTGRES_PASSWORD=[password] \
+  -p 5432:5432 \
+  -v [volume]:/var/lib/postgresql/data \
+  postgres
 
