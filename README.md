@@ -27,3 +27,13 @@ Additional arguments can be passed for the password after compile
 go build
 ./grattor login Timmonthy 123
 
+For a continer build you can use this for the db
+
+podman run -d \
+    --name postgres-test \
+    -network [yournetwork] \
+    -e POSTGRES_PASSWORD=[yourpassword] \
+    -p 5432:5432 \
+    -v [yourvolume]:/var/lib/postgresql \
+    postgres
+
