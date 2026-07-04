@@ -44,3 +44,10 @@ podman run -d --name postgres-test \
         -p 5432:5432 \
         -v pg-data:/var/lib/postgresql \
         postgres
+
+If setup like so you can use podman / docker or psql to hop in. 
+
+podman exec -it postgres-test psql -U postgres
+or 
+psql -h 127.0.0.1 -p 5432 -U postgres -d postgres
+
