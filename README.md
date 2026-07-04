@@ -47,7 +47,9 @@ podman run -d --name postgres-test \
 
 If setup like so you can use podman / docker or psql to hop in. 
 
-podman exec -it postgres-test psql -U postgres
+```podman exec -it postgres-test psql -U postgres```
+
 or 
-psql -h 127.0.0.1 -p 5432 -U postgres -d postgres
+
+```psql -h 127.0.0.1 -p 5432 -U postgres -d postgres```
 
