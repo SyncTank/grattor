@@ -36,6 +36,7 @@ podman run -d \
   -p 5432:5432 \
   -v [volume]:/var/lib/postgresql/data \
   postgres
+
 Ex.
 podman run -d --name postgres-test \
         --network bridge \
