@@ -1,8 +1,7 @@
 # grattor
-go - Blog Aggregator
+Go - Blog Aggregator
 
-postgres is used for the database 
-
+Postgres is used for the database 
 If installed locally
 ```
 sudo apt update
@@ -16,8 +15,8 @@ systemctl status postgresql
 sudo systemctl start postgresql
 ```
 
-I usually setup a pod for the application which you'll find it setup for below.
-For a continer build you can use this for the db
+I usually setup a pod/container for the application which you'll find it setup for below.
+To initilize a db manually you can do it as below. Keep in mind the volume, I setup a custom volume pg-data for this project.
 ```
 podman run -d \
   --name postgres-test \
@@ -54,9 +53,15 @@ go install github.com/pressly/goose/v3/cmd/goose@latest
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 ```
 
+If it is your first time you'll need to create the database in question `CREATE DATABASE gator`
+Once that is I recommend connecting to it and verifying `\c gator` and then run `SELECT version();` for the sanity check
+
 # Reindexing :
+The Postgres database can get out of wack due to upgrade done to the system. You can use  goose as mention, but sometimes you need to refresh the instance which is done below.
+```
 ALTER DATABASE postgres REFRESH COLLATION VERSION;
 REINDEX DATABASE postgres;
+```
 
 Connection String : Is place in a file called .gatorjson at root of the project
 ```
