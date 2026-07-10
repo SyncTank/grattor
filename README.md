@@ -16,36 +16,58 @@ systemctl status postgresql
 sudo systemctl start postgresql
 ```
 
-I usually setup a pod for the application which you'll find it setup for.
+I usually setup a pod for the application which you'll find it setup for below.
+For a continer build you can use this for the db
+```
+podman run -d \
+  --name postgres-test \
+  --network [network] \
+  -e POSTGRES_PASSWORD=[password] \
+  -p 5432:5432 \
+  -v [volume]:/var/lib/postgresql/data \
+  postgres
+```
+
+Ex.
+```
+podman run -d --name postgres-test \
+        --network bridge \
+        -e POSTGRES_PASSWORD=123 \
+        -p 5432:5432 \
+        -v pg-data:/var/lib/postgresql \
+        postgres
+```
+
+After the initialization of the container you can connect to like so
 ```
 podman exec -it <container_name> psql -U postgres
 ```
-
 or if installed psql
 ```
 psql -h localhost -p 5432 -U postgres -d postgres
 ```
+The default should work just fine, just make sure to check the password and that the database exists
 
-To handle any database migrations the project has been setup to use Goose
+To handle any database migrations the project has been setup to use Goose and sqlc used to generate sql queries for us
 ```
 go install github.com/pressly/goose/v3/cmd/goose@latest
-```
-
-One more tool to note is sqlc used to generate sql queries for us
-```
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 ```
 
-For reindexing :
+# Reindexing :
 ALTER DATABASE postgres REFRESH COLLATION VERSION;
 REINDEX DATABASE postgres;
 
-Connection String : file called .gatorjson
+Connection String : Is place in a file called .gatorjson at root of the project
+```
 {"db_url": ["postgres://", "?sslmode=disable"],"current_user_name":"postgres", "DBString":"", "password": ""}
+```
+postgres://postgres:123@localhost:5432/database?sslmode=disable
+
+# Example goose:
 
 Goose for database migrations, setups are in SQL folder 
 goose postgres <connection_string> up
-# example:
 ```
 - goose postgres "postgres://postgres:@localhost:5432/gator" up
 - goose postgres "postgres://postgres:@localhost:5432/gator" down
@@ -57,27 +79,7 @@ The connection string protocal follow this :
 - protocol://username:password@host:port/database?sslmode=disable
 ```
 
-postgres://postgres:123@localhost:5432/database?sslmode=disable
-
-Additional arguments can be passed for the password after compile
 go build
 ./grattor login Timmonthy 123
 
-For a continer build you can use this for the db
-
-podman run -d \
-  --name postgres-test \
-  --network [network] \
-  -e POSTGRES_PASSWORD=[password] \
-  -p 5432:5432 \
-  -v [volume]:/var/lib/postgresql/data \
-  postgres
-
-Ex.
-podman run -d --name postgres-test \
-        --network bridge \
-        -e POSTGRES_PASSWORD=123 \
-        -p 5432:5432 \
-        -v pg-data:/var/lib/postgresql \
-        postgres
 
