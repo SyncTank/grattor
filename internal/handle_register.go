@@ -19,10 +19,12 @@ func HandlerRegister(s *State, cmd command) error {
 		Name:      cmd.Args[0],
 	}
 
-	log.Println(args_handle)
+	//log.Println(args_handle)
 
 	usr, err := s.DB.CreateUser(context.Background(), args_handle)
 	if err != nil {
+		log.Println(err)
+		log.Println(t, " \nID : ", args_handle.ID, "\nName : ", args_handle.Name)
 		os.Exit(1)
 	}
 
