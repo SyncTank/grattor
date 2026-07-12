@@ -13,13 +13,15 @@ import (
 func main() {
 	state := internal.State{}
 	args := os.Args
-	if len(args) <= 2 {
+	if len(args) >= 1 {
 		log.Fatal("Usage: <command> [arguments]")
 	}
 	state.State_init(os.Args)
 
 	state.Coms.Register("login", internal.HandlerLogin)
 	state.Coms.Register("register", internal.HandlerRegister)
+	state.Coms.Register("reset", internal.HandlerReset)
+	state.Coms.Register("users", internal.HandlerListUsers)
 
 	state.Cfg.DBString = internal.BuildDBString(&state)
 	db, err := sql.Open("postgres", state.Cfg.DBString)

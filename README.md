@@ -53,10 +53,17 @@ go install github.com/pressly/goose/v3/cmd/goose@latest
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 ```
 
-If it is your first time you'll need to create the database in question `CREATE DATABASE gator`
-Once that is I recommend connecting to it and verifying `\c gator` and then run `SELECT version();` for the sanity check
+If it is your first time you'll need to create the database in question `CREATE DATABASE gator;`
 
-# Reindexing :
+Once that is done I recommend connecting to it and verifying `\c gator` and then run `SELECT version();` for the sanity check
+
+Finally to get the ball rolling cd into the sql/schema folder and run the goose to update postgres for the complete setup
+```
+cd sql/schema
+goose postgres "postgres://postgres:123@localhost:5432/gator" up
+```
+
+# Reindexing & ConnectionString:
 The Postgres database can get out of wack due to upgrade done to the system. You can use  goose as mention, but sometimes you need to refresh the instance which is done below.
 ```
 ALTER DATABASE postgres REFRESH COLLATION VERSION;
@@ -69,7 +76,7 @@ Connection String : Is place in a file called .gatorjson at root of the project
 ```
 postgres://postgres:123@localhost:5432/database?sslmode=disable
 
-# Example goose:
+# Examples :
 
 Goose for database migrations, setups are in SQL folder 
 goose postgres <connection_string> up

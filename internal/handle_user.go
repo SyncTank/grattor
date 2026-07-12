@@ -1,8 +1,10 @@
 package internal
 
 import (
+	"context"
 	"errors"
 	"log"
+	"os"
 )
 
 func HandlerLogin(s *State, cmd command) error {
@@ -10,10 +12,16 @@ func HandlerLogin(s *State, cmd command) error {
 		log.Fatalln(" Run - Failed to execute command ")
 		return errors.New(" Handler expects a single argument, the username")
 	}
-	com_name := cmd.Args[0]
 
-	err := s.Cfg.SetUserConfig(com_name)
+	com_name := cmd.Args[0]
+	usr, err := s.DB.GetUser(context.Background(), com_name)
 	if err != nil {
+		log.Panicln("User not found")
+		os.Exit(1)
+	}
+
+	erro := s.Cfg.SetUserConfig(usr.Name)
+	if erro != nil {
 		return errors.New(" failed to set user")
 	}
 
