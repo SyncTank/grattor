@@ -1,1 +1,1 @@
-{"db_url": ["postgres://", "?sslmode=disable"],"current_user_name":"postgres", "DBString":"", "password": "123"}
+{"db_url":["postgres://","?sslmode=disable"],"driver":"postgres","current_user_name":"holgith","password":"123","DBString":"postgres://postgres:123@localhost:5432/gator?sslmode=disable"}

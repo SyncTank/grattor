@@ -5,6 +5,8 @@ import (
 	"errors"
 	"log"
 	"os"
+
+	"github.com/SyncTank/grattor/internal/database"
 )
 
 func HandlerLogin(s *State, cmd command) error {
@@ -26,4 +28,9 @@ func HandlerLogin(s *State, cmd command) error {
 	}
 
 	return nil
+}
+
+func printUser(user database.User) {
+	log.Printf(" * ID: %v\n", user.ID)
+	log.Printf(" * Name: %v\n", user.Name)
 }

@@ -12,6 +12,7 @@ const CONFIG_FILE = "/.gatorconfig.json"
 
 type Config struct {
 	DB_url            []string `json:"db_url"`
+	Driver            string   `json:"driver"`
 	Current_user_name string   `json:"current_user_name"`
 	Password          string   `json:"password"`
 	DBString          string
@@ -21,9 +22,11 @@ func BuildDBString(s *State) string {
 	// protocol://username:password@host:port/database?sslmode=disable
 	// postgres://Rudy:@localhost:5432/gator
 	// postgres://postgres:postgres@localhost:5432/gator
-	user := s.Cfg.Current_user_name
+	user := s.Cfg.Driver
 	pass := s.Cfg.Password
-	return s.Cfg.DB_url[0] + user + ":" + pass + "@" + "localhost:5432/gator" + s.Cfg.DB_url[1]
+	result := s.Cfg.DB_url[0] + user + ":" + pass + "@" + "localhost:5432/gator" + s.Cfg.DB_url[1]
+	//log.Println(result)
+	return result
 }
 
 func ReadConfig() (Config, error) {
@@ -52,8 +55,8 @@ func ReadConfig() (Config, error) {
 }
 
 func (cfg *Config) writeConfig() error {
-	//dir, err := os.Getwd()
-	dir, err := os.UserHomeDir()
+	dir, err := os.Getwd()
+	//dir, err := os.UserHomeDir()
 	Check(" Write - Failed to fetch working directory : ", err)
 
 	filePath := dir + CONFIG_FILE
@@ -72,10 +75,4 @@ func (cfg *Config) SetUserConfig(name string) error {
 	err := cfg.writeConfig()
 	log.Println("Set local state user to ", name)
 	return CheckSlient(" SetUser - checking if name can be set : ", err)
-}
-
-func (cfg *Config) SetUserlocal(name string) error {
-	cfg.Current_user_name = name
-	log.Println("Set local state user to ", name)
-	return nil
 }

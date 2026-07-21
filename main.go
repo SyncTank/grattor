@@ -13,22 +13,27 @@ import (
 func main() {
 	state := internal.State{}
 	args := os.Args
-	if len(args) >= 1 {
+	//log.Println(len(args))
+	if len(args) <= 1 {
 		log.Fatal("Usage: <command> [arguments]")
 	}
 	state.State_init(os.Args)
+
+	state.Cfg.DBString = internal.BuildDBString(&state)
+	db, err := sql.Open("postgres", state.Cfg.DBString)
+	if err != nil {
+		log.Fatalf("Error connecting to db: %v\n", err)
+	}
+	defer db.Close()
+
+	dbQueries := database.New(db)
+	state.DB = dbQueries
 
 	state.Coms.Register("login", internal.HandlerLogin)
 	state.Coms.Register("register", internal.HandlerRegister)
 	state.Coms.Register("reset", internal.HandlerReset)
 	state.Coms.Register("users", internal.HandlerListUsers)
-
-	state.Cfg.DBString = internal.BuildDBString(&state)
-	db, err := sql.Open("postgres", state.Cfg.DBString)
-	internal.Check("database connection : ", err)
-
-	dbQueries := database.New(db)
-	state.DB = dbQueries
+	state.Coms.Register("agg", internal.HandlerAggregate)
 
 	err = state.Coms.Run(&state, internal.CommandSetup(args))
 	if err != nil {

@@ -11,7 +11,7 @@ import (
 )
 
 func HandlerRegister(s *State, cmd command) error {
-	t := time.Now()
+	t := time.Now().UTC()
 	args_handle := database.CreateUserParams{
 		ID:        uuid.New(),
 		CreatedAt: t,
@@ -19,12 +19,10 @@ func HandlerRegister(s *State, cmd command) error {
 		Name:      cmd.Args[0],
 	}
 
-	//log.Println(args_handle)
-
 	usr, err := s.DB.CreateUser(context.Background(), args_handle)
 	if err != nil {
 		log.Println(err)
-		log.Println(t, " \nID : ", args_handle.ID, "\nName : ", args_handle.Name)
+		printUser(usr)
 		os.Exit(1)
 	}
 

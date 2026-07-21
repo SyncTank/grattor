@@ -14,11 +14,12 @@ func HandlerListUsers(s *State, cmd command) error {
 		return err
 	}
 
+	//log.Println(s.Cfg.Current_user_name)
 	for index := range usrs {
 		if usrs[index].Name == s.Cfg.Current_user_name {
-			log.Println(usrs[index].Name + " (current)")
+			log.Println("- '" + usrs[index].Name + " (current)'")
 		} else {
-			log.Println(usrs[index].Name)
+			log.Println("- '" + usrs[index].Name + "'")
 		}
 	}
 
