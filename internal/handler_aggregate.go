@@ -1,12 +1,13 @@
 package internal
 
 import (
-	_ "context"
-	_ "log"
-	_ "time"
+	"context"
+	"log"
 )
 
 func HandlerAggregate(s *State, cmd command) error {
-	fetchFeed(, "https://www.wagslane.dev/index.xml")
+	log.Printf("state %v\n", s)
+	log.Printf("cmd %v\n", cmd)
+	fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
 	return nil
 }

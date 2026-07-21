@@ -1,5 +1,10 @@
 package internal
 
+import (
+	"context"
+	"log"
+)
+
 type RSSFeed struct {
 	Channel struct {
 		Title       string    `xml:"title"`
@@ -17,6 +22,8 @@ type RSSItem struct {
 }
 
 func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
+	log.Println("Fetching feed from ctx at " + feedURL)
+	log.Println(ctx)
 
 	return nil, nil
 }
